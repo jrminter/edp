@@ -1,3 +1,5 @@
+cd %GIT_HOME%
+cd edp/docs/jrmMsaPoster/scripts
 cd ../Sweave/
 R CMD Sweave  jrmMsaPoster
 # R CMD Stangle jrmMsaPoster
