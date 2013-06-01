@@ -1,0 +1,35 @@
+# global stuff
+*~
+
+# Windows stuff
+Thumbs.db
+
+# Mac Stuff
+.DS_Store
+
+# R stuff
+# N.B. do .Rdata on a dir by dir basis...
+.Rproj.user
+.Rhistory
+
+# For this module
+Readme.html
+
+docs/jrmMsaPoster/Sweave/*.log
+docs/jrmMsaPoster/Sweave/*.aux
+docs/jrmMsaPoster/Sweave/*.out
+docs/jrmMsaPoster/Sweave/*.nav
+docs/jrmMsaPoster/Sweave/*.pdf
+docs/jrmMsaPoster/Sweave/*.snm
+docs/jrmMsaPoster/Sweave/*.synctex.gz
+docs/jrmMsaPoster/Sweave/*.tex
+docs/jrmMsaPoster/Sweave/*.toc
+
+R/*.gz
+R/*.Rcheck
+R/Peaks/src/*.so
+R/Peaks/src/*.o
+R/Peaks/src/*.rds
+
+
+

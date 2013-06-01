@@ -1,0 +1,594 @@
+% ========================= jrmMsaPoster.Rnw ==========================
+% 345678901234567890123456789012345678901234567890123456789012345679012
+%
+\documentclass[final,t]{beamer}
+\mode<presentation>
+{
+  \usetheme{EK}
+}
+% additional settings
+\setbeamerfont{itemize}{size=\normalsize}
+\setbeamerfont{itemize/enumerate body}{size=\normalsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+
+% additional packages
+\usepackage{times}
+\usepackage{amsmath,amsthm, amssymb, latexsym}
+\usepackage{exscale}
+%\boldmath
+\usepackage{booktabs, array}
+%\usepackage{rotating} %sideways environment
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+% display size = 92in (233 cm) x 46in (116 cm)
+\usepackage[orientation=landscape, size=custom,
+width=220, height=110, scale=1.9]{beamerposter}
+\listfiles
+% \graphicspath{{figures/}}
+% Display a grid to help align images
+%\beamertemplategridbackground[1cm]
+
+\title{An improved workflow for reproducible processing and analysis
+of polycrystalline electron diffraction patterns}
+\author{John R. Minter}
+\institute[Eastman Kodak Company]{Analytical Sciences, Eastman Kodak
+Co., Rochester, NY}
+\date[August 2013]{August 2013}
+
+% abbreviations
+\usepackage{xspace}
+\makeatletter
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+\def\eg{{e.g}\onedot} \def\Eg{{E.g}\onedot}
+\def\ie{{i.e}\onedot} \def\Ie{{I.e}\onedot}
+\def\cf{{c.f}\onedot} \def\Cf{{C.f}\onedot}
+\def\etc{{etc}\onedot}
+\def\vs{{vs}\onedot}
+\def\wrt{w.r.t\onedot}
+\def\dof{d.o.f\onedot}
+\def\etal{{et al}\onedot}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+%
+% Set up Sweave...
+%
+<<echo=F,results=hide>>=
+# A hidden code chunk
+# start with a clean environment
+rm(list=ls())
+options(digits=4, width=72, continue=" ")
+# set as needed
+# this assumes it is in the GIT_HOME tree
+str.gh <- Sys.getenv("GIT_HOME")
+setwd(str.gh)
+str.wd <- './edp/docs/jrmMsaPoster/Sweave/'
+setwd(str.wd)
+Sys.setenv(TEXINPUTS=str.wd)
+Sys.setenv(BIBINPUTS=str.wd)
+Sys.setenv(BSTINPUTS=str.wd)
+# make sure needed packages & functions are loaded
+require(xtable)
+require(edp)
+icdd.dir <- '../dat/lines/'
+@
+
+\begin{frame}{}
+  \begin{columns}[t]
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% Column One %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{column}{.23\linewidth}
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block One %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{block}{Objective: Efficient, reproducible analyses}
+        Microscopists rarely record and analyze a single image or
+        diffraction patterns\ldots
+        \vskip1ex
+        \begin{center}
+          \begin{column}{.90\linewidth}
+            \textbf{Goal: \textcolor{ekred}{eliminate} barriers to
+            reproducibility}
+            \vskip1ex
+            \begin{itemize}
+              \item Repetitive manual instrument adjustments
+              \item Interaction with (multiple) software GUIs
+              \item ``Black box'' software
+              \item Copy/paste report generation
+            \end{itemize}
+          \end{column}
+        \end{center}
+        \vskip1ex
+        \textbf{Plan:} Develop a workflow that maximizes scripting
+        of the analysis and implements ``literate programming''\;$^1$
+        -- where code chunks are embedded in the report, generating
+        the results during compilation.
+        
+        \vspace{1ex}
+        \footnotesize{$^1$ D. Knuth, The Computer Journal \textbf{27}
+            (1984) p. 97--111. } \\
+      \end{block}
+      
+      \vskip1cm
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block Two %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{block}{\textcolor{ekred}
+              {Step 1:} Reproducible pattern acquisition}
+        
+        Do the best we can with a 20 yr old CM20 with an early,
+        limited RS-232 interface and a single grid specimen holder\ldots
+        
+        %% An inner block
+        \begin{center}
+          \vspace{-3ex}
+          \begin{column}{.9\linewidth}
+            \begin{itemize}
+              \item Select conditions for unknown. Use ``normalization'' to
+              correct for hysteresis.
+              \item Record unknown pattern first \& save lens conditions
+              \item Restore lens conditions with standard and focus with
+              stage control
+            \end{itemize}
+          \end{column}
+        \end{center}
+      \end{block}
+      \vskip1cm
+
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block Three %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{block}{\textcolor{ekred}
+              {Step 2:} Reproducible distortion correction}
+              
+        Extended Hou and Li's\;$^2$ ``DiffractionDistortion'' plug-in for
+        \emph{DigitalMicrograph} to correct the elliptical distortion
+        and perform the radial average.
+        
+        \begin{center}
+          \vspace{-3ex}
+          \begin{column}{.9\linewidth}
+            \begin{itemize}
+              \item Still requires an ``initial guess'' for center.
+              \item Uses the approach of Capitani \emph{et al.}\,$^3$
+              to correct distortion (rotate to major axis and scale to
+              a circle.)
+              \item Performs the radial average, writes a `.csv'
+              file for analysis.
+              \item New plug-in ``edp'' (Open Source, version control)
+              designed to save choices \& maximize user efficiency.
+            \end{itemize}
+            \vspace{1ex}
+            \footnotesize{$^2$ V Hou and D Li, Microscopy Today \textbf{16}
+            (May 2008) p. 36-41. } \\
+            \footnotesize{$^3$ G Capitani \emph{et al.}, Ultramicroscopy
+            \textbf{106} (2006) p. 66-74.} 
+
+            
+          \end{column}
+        \end{center}
+              
+              
+      \end{block}
+    \end{column}
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% Column TWO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{column}{.23\linewidth}
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block One %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{block}{Processed NiO Diffraction Pattern}
+        \begin{center}
+        \includegraphics[width=0.75\linewidth]
+        {inc/qm-03800-NiO-01-ana.png}%
+        \end{center}
+        \textbf{Left:} Inverted diffraction pattern from NiO thin film.
+        Bottom inset: ``Unwound'' angular image exhibiting the
+        sinusoidal pattern characteristic of elliptical distortion
+        produced by spherical aberration. \textbf{Right:} Corrected
+        pattern after rotation and bi-axial scaling.
+      \end{block}
+      
+      \vskip1cm
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block Two %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<label=hNBT,include=FALSE,echo=FALSE>>=
+# hidden code to do the plot
+
+dat.dir  <- '../dat/csv/'
+str.bas  <- 'qm-03800-NiO-01'
+r.start  <- 210
+r.end    <- 1100
+bkg.ord  <- '2'
+bkg.win  <- '15'
+
+dir.create(dat.dir, showWarnings = FALSE, recursive = TRUE)
+
+#             B   L   T   R
+std.mar <- c(5.1,4.1,4.1,2.1)
+fig.mar <- c(5.1,4.1,1.1,1.1)
+
+par(mar=fig.mar)
+
+# do the work
+ni.o.pars <- tune.edp.baseline.dm(dat.path=dat.dir,
+                                  edp.base=str.bas,
+                                  r.min=r.start,
+                                  r.max=r.end,
+                                  sb.win=bkg.win,
+                                  sb.ord=bkg.ord )
+par(mar=std.mar)
+@
+
+      
+      \begin{block}{\textcolor{ekred}
+              {Step 3:} Reproducible background correction}
+              
+      We use the Open Source R statistical programming language for
+      our post-processing. This is easily scripted, and frequently
+      used operations assembled in packages maintained under version
+      control, so an individual analysis needs few lines of code.
+      Ours is encapsulated in the ``edp'' package.
+      
+      The function, \texttt{tune.edp.baseline.dm()}, permits the analyst
+      to find the best spline parameters (size of the averaging window
+      and polynomial order) for a given material. This function uses
+      algorithms developed by Morh\'{a}\v{c}\;$^4$ and supplied in the ``Peaks''
+      package.
+      % \vfill
+      \begin{center}
+<<label=NBT,fig=TRUE, width=9, height=3.5, echo=FALSE>>=
+<<hNBT>>
+@
+       \end{center}
+       \vspace{1ex}
+       
+       These parameters typically only need to be tuned once for an
+       new material.
+       
+       \vspace{1ex}
+       
+       \footnotesize{$^4$ M. Morh\'{a}\v{c} \emph{et al.}, Nuclear
+       Instruments and Methods in Physics Research A \textbf{401}
+       (1997) p. 113-132. \\ \emph{N.B.}: The Peaks package on CRAN
+       has not been properly updated to accommodate the changes
+       in loading shared C libraries in R $\geq$ 3.0.0. We have
+       a patched version in our github repository.} 
+      \end{block}
+    \end{column}
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% Column Three %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+<<label=hNCC,include=FALSE,echo=FALSE>>=
+# hidden code to do the plot
+
+dat.dir  <- '../dat/csv/'
+str.bas  <- 'qm-03800-NiO-01'
+r.start     <- 255
+r.end       <- 750
+bkg.ord     <- '2'
+bkg.win     <- '15'
+kV          <- 200
+cl.mm       <- 340
+bin         <-   1
+card.no     <- '47-1049'
+cmpd.name   <- 'NiO'
+space.group <- 'Fm3m'
+pk.sig      <- 7.0
+pk.thr      <- 5.0
+pk.hw       <- 10
+
+ni.o.cam.const <- meas.camera.constant(cnt.dir=dat.dir,
+                                       cnt.base=str.bas,
+                                       r.start,
+                                       r.end,
+                                       sb.win=bkg.win,
+                                       sb.ord=bkg.ord,
+                                       hw.hm=4,
+                                       icdd.dir=icdd.dir,
+                                       icdd.no=card.no,
+                                       compound=cmpd.name,
+                                       sp.grp=space.group,
+                                       pk.sigma=pk.sig,
+                                       pk.thres=pk.thr,
+                                       ccd.px.mm=15,
+                                       do.log.y=FALSE,
+                                       main=NA)
+@
+
+<<label=hACC,include=FALSE,echo=FALSE>>=
+# hidden code to do the plot
+
+dat.dir  <- '../dat/csv/'
+str.bas  <- 'qm-03801-Al-01'
+r.start     <- 255
+r.end       <- 750
+bkg.ord     <- '4'
+bkg.win     <- '15'
+kV          <- 200
+cl.mm       <- 340
+bin         <-   1
+card.no     <- '04-0787'
+cmpd.name   <- 'Al'
+space.group <- 'Fm3m'
+pk.sig      <- 4.0
+pk.thr      <- 0.8
+pk.hw       <- 4
+
+dir.create(dat.dir, showWarnings = FALSE, recursive = TRUE)
+
+al.cam.const <- meas.camera.constant(cnt.dir=dat.dir,
+                                     cnt.base=str.bas,
+                                     r.start,
+                                     r.end,
+                                     sb.win=bkg.win,
+                                     sb.ord=bkg.ord,
+                                     hw.hm=4,
+                                     icdd.dir=icdd.dir,
+                                     icdd.no=card.no,
+                                     compound=cmpd.name,
+                                     sp.grp=space.group,
+                                     pk.sigma=pk.sig,
+                                     pk.thres=pk.thr,
+                                     ccd.px.mm=15,
+                                     do.log.y=FALSE,
+                                     main=NA)
+
+delta <- round(50.0*abs(al.cam.const[1]-ni.o.cam.const[1])/
+               (al.cam.const[1]+ni.o.cam.const[1]), 2)
+@
+
+
+    \begin{column}{.23\linewidth}
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block One %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{block}{\textcolor{ekred}
+              {Step 4:} Robust peak detection \& calibration}
+              
+      The ``Peaks'' package provides a robust peak detection algorithm
+      implemented as the \texttt{SpectrumSearch()} function, which is
+      easily tuned to detect diffraction peaks. Typically, we use the
+      first 5 peaks for calibration. The \texttt{edp} package makes an
+      initial guess of the camera constant from the highest peak and
+      then performs a Gaussian fit to the background subtracted spectrum.
+      
+      \begin{center}
+
+<<label=NCC,fig=TRUE, width=9, height=4, echo=FALSE>>=
+<<hNCC>>
+@      
+       \end{center}
+       \vspace{0.2ex}
+       The background-subtracted spectrum is plotted in black. The
+       pattern was then modeled as the sum of five Gaussian peaks
+       (red dashes) with an initial guess of the uniform half-width
+       at half height of \Sexpr{pk.hw} px. The fit peak positions
+       are shown in blue. The camera constant estimated from the fit
+       was \Sexpr{round(ni.o.cam.const[1], 2)} $\pm$
+       \Sexpr{round(ni.o.cam.const[2], 2)} px-\AA. The camera constant
+       from an Al thin film measured under the same conditions was
+       \Sexpr{round(al.cam.const[1], 2)} $\pm$ 
+       \Sexpr{round(al.cam.const[2], 2)} px-\AA, a difference of
+       \Sexpr{delta}\% -- a respectable precision for this instrument.
+       
+      \end{block}
+      
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block Two %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<label=hBATCC,include=FALSE,echo=FALSE>>=
+# hidden code to do the plot
+
+
+dat.dir  <- '../dat/csv/'
+str.bas  <- 'qm-03796-AlStd'
+r.start     <- 255
+r.end       <- 750
+bkg.ord     <- '4'
+bkg.win     <- '15'
+kV          <- 200
+cl.mm       <- 340
+bin         <-   1
+card.no     <- '04-0787'
+cmpd.name   <- 'Al'
+space.group <- 'Fm3m'
+pk.sig      <- 4.0
+pk.thr      <- 0.8
+pk.hw       <- 4
+
+dir.create(dat.dir, showWarnings = FALSE, recursive = TRUE)
+
+ba.ti.al.cam.const <- meas.camera.constant(cnt.dir=dat.dir,
+                                     cnt.base=str.bas,
+                                     r.start,
+                                     r.end,
+                                     sb.win=bkg.win,
+                                     sb.ord=bkg.ord,
+                                     hw.hm=4,
+                                     icdd.dir=icdd.dir,
+                                     icdd.no=card.no,
+                                     compound=cmpd.name,
+                                     sp.grp=space.group,
+                                     pk.sigma=pk.sig,
+                                     pk.thres=pk.thr,
+                                     ccd.px.mm=15,
+                                     do.log.y=FALSE,
+                                     main=NA)
+
+@
+
+<<label=hBATBT,include=FALSE,echo=FALSE>>=
+# hidden code to do the plot
+
+dat.dir  <- '../dat/csv/'
+str.bas  <- 'qm-03797-BaTiO3'
+r.start  <- 180
+r.end    <- 1000
+bkg.ord  <- '6'
+bkg.win  <- '15'
+
+dir.create(dat.dir, showWarnings = FALSE, recursive = TRUE)
+
+# do the work
+#             B   L   T   R
+std.mar <- c(5.1,4.1,4.1,2.1)
+fig.mar <- c(5.1,3.7,0.5,0.1)
+
+par(mar=fig.mar)
+ba.ti.o3.pars <- tune.edp.baseline.dm(dat.path=dat.dir,
+                                      edp.base=str.bas,
+                                      r.min=r.start,
+                                      r.max=r.end,
+                                      sb.win=bkg.win,
+                                      sb.ord=bkg.ord )
+
+par(mar=std.mar)
+@
+
+      \begin{block}{\textcolor{ekred}
+              {A test:} BaTiO$_{3}$ nanoparticles}
+      \begin{columns}[T]
+        \column{.5\linewidth}
+          % \centering
+          \includegraphics[width=\linewidth]
+          {inc/qm-03797-53C-dc-inv-cr.png}%
+          \vspace{0.2ex}
+          \begin{center}
+          Distortion-corrected EDP
+          \end{center}
+          
+
+       \column[t]{.5\linewidth}
+         \begin{center}
+<<label=BATBT,fig=TRUE, width=6, height=4, echo=FALSE>>=
+<<hBATBT>>
+@
+         \end{center}
+         \vspace{0.2ex}
+         This pattern has more structure. Background tuning requires
+         a more complicated spline, but does well except at the highest
+         radius.
+ 
+     \end{columns}
+
+     
+      \end{block}      
+
+
+    \end{column}
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%% Column Four %%%%%%%%%%%%%%%%%%%%%%%%%%%%     
+    \begin{column}{.23\linewidth}
+
+<<label=hAnBAT,include=TRUE,echo=FALSE>>=
+# analyze BaTiO3
+
+str.bas  <- 'qm-03797-BaTiO3'
+r.start  <- 180
+r.end    <- 1000
+bkg.ord  <- '6'
+bkg.win  <- '15'
+hw.hm    <- 4
+pk.sigma <- 5.0
+pk.thres <- 2.0
+
+# do the work
+#             B   L   T   R
+std.mar <- c(5.1,4.1,4.1,2.1)
+fig.mar <- c(5.1,3.7,0.5,0.1)
+par(mar=fig.mar)
+
+bat <- process.edp.dm(dat.path=dat.dir,
+                      edp.base=str.bas,
+                      r.min=r.start,
+                      r.max=r.end,
+                      sb.win=bkg.win,
+                      sb.ord=bkg.ord,
+                      cc.mu.px.A=ba.ti.al.cam.const[1],
+                      do.plot=FALSE,
+                      do.log=FALSE)
+# do the plot by hand
+k.min <- min(bat$k)
+k.max <- max(bat$k)
+i.max <- 1.05*max(bat$int.net)
+k.t <- c(k.min, k.max)
+y.t <- c(0.01,i.max)
+plot(k.t, y.t, type='n', xlab='k (2*pi/d) [nm]',
+     ylab='net counts',
+     main=NA)
+lines(bat$k, bat$int.net, col='black')
+add.icdd.lines(path='../dat/lines/',
+               card='05-0626-BaTiO3-P4mm',
+               max.ht=1500,
+               l.col='red',
+               do.legend=FALSE)
+add.icdd.lines(path='../dat/lines/',
+               card='34-0129-BaTiO3-P63mmc',
+               max.ht=1500,
+               l.col='slateblue',
+               do.legend=FALSE)
+
+l.text <- c('sample', 'cubic (05-0626)', 'hexagonal (34-0129)')
+l.col  <- c('black',  'red',             'slateblue')
+legend("topright", l.text, col=l.col, lty=1, lwd=1)
+
+
+par(mar=std.mar)
+
+@
+
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block One %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     \begin{block}{\textcolor{ekred}
+              {Step 5:} Comparison with standards}
+      \vfill
+       \begin{center}
+<<label=AnBAT,fig=TRUE, width=6, height=4, echo=FALSE>>=
+<<hAnBAT>>
+@
+         \end{center}
+         \vspace{0.2ex}
+         Note that the agreement with the standard cubic phase is better
+         than the hexagonal phase.
+    
+      \end{block}
+      
+      %%%%%%%%%%%%%%%%%%%%%%%%% Block Two %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{block}{\textcolor{ekred}
+              {Key benefits}}
+       
+        \begin{itemize}
+        \item \textcolor{ekred}{Scripted analyses} -- 
+        Using R/Sweave/\LaTeX\ for analysis and report generation
+        permits ``code-chunks'' in the report to generate statistical
+        and analysis and graphics with minimal ``cut \& paste.'' 
+        \emph{N.B.} - results from computationally-intensive steps
+        may be cached.
+        The entire analysis (for example, this poster) may be replicated
+        with a single command. All the documents are
+        text based and work efficiently with version control. RStudio provides
+        a comfortable development environment.
+        \item \textcolor{ekred}{Reuse} -- Packaging common code into
+        packages minimizes duplication and is aided by version control.
+        \item \textcolor{ekred}{Easy extension}  -- An analyst can extend
+        a project with much less effort.\\
+        Preparing a compressed compendium (7-zip) for a project permits
+        an analyst to replicate a result in less than 15 minutes.
+        \end{itemize}   
+
+      \end{block}
+      
+      
+      \begin{block}{Acknowledgements}
+        The author is grateful to V. Hou for his willingness to both
+        share the source code to his \texttt{DiffractionDistortion}
+        plug-in and to grant permission to extend it and distribute
+        the derivative  work. A former colleague, M. Dirmeyer, supplied
+        the dispersion of BaTiO$_3$ nanoparticles.
+      \end{block}
+
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+\end{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% End: 

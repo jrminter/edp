@@ -1,0 +1,11 @@
+Package: edp
+Type: Package
+Title: Process electron diffaction patterns
+Version: 1.0.11
+Date: 2013-04-03
+Author: John R. Minter
+Maintainer: John R. Minter <jrminter@gmail.com>
+Description: Analyze electron diffraction patterns.
+License: GPL (>=2) | BSD
+LazyLoad: yes
+Depends: R (>= 2.15.2), Peaks
