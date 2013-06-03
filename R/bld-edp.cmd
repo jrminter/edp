@@ -1,5 +1,3 @@
-cd %GIT_HOME%
-cd "./edp/R"
 R CMD build edp
 R CMD check edp
 pause
