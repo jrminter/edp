@@ -19,7 +19,7 @@ docs/jrmMsaPoster/Sweave/*.log
 docs/jrmMsaPoster/Sweave/*.aux
 docs/jrmMsaPoster/Sweave/*.out
 docs/jrmMsaPoster/Sweave/*.nav
-docs/jrmMsaPoster/Sweave/*.pdf
+# docs/jrmMsaPoster/Sweave/*.pdf
 docs/jrmMsaPoster/Sweave/*.snm
 docs/jrmMsaPoster/Sweave/*.synctex.gz
 docs/jrmMsaPoster/Sweave/*.tex
