@@ -22,7 +22,7 @@
 \usepackage[latin1]{inputenc}
 % display size = 92in (233 cm) x 46in (116 cm)
 \usepackage[orientation=landscape, size=custom,
-width=220, height=110, scale=1.9]{beamerposter}
+width=212, height=106, scale=1.9]{beamerposter}
 \listfiles
 % \graphicspath{{figures/}}
 % Display a grid to help align images
@@ -64,10 +64,7 @@ Co., Rochester, NY}
 rm(list=ls())
 options(digits=4, width=72, continue=" ")
 # set as needed
-# this assumes it is in the GIT_HOME tree
-str.gh <- Sys.getenv("GIT_HOME")
-setwd(str.gh)
-str.wd <- './edp/docs/jrmMsaPoster/Sweave/'
+str.wd <- '~/work/proj/jrmMsaPoster/Sweave/'
 setwd(str.wd)
 Sys.setenv(TEXINPUTS=str.wd)
 Sys.setenv(BIBINPUTS=str.wd)
@@ -75,7 +72,7 @@ Sys.setenv(BSTINPUTS=str.wd)
 # make sure needed packages & functions are loaded
 require(xtable)
 require(edp)
-icdd.dir <- '../dat/lines/'
+icdd.dir <- '../../../global/lines/'
 @
 
 \begin{frame}{}
@@ -218,7 +215,7 @@ par(mar=std.mar)
 
       
       \begin{block}{\textcolor{ekred}
-              {Step 3:} Reproducible background correction}
+              {Step 3:} Background correction}
               
       We use the Open Source R statistical programming language for
       our post-processing. This is easily scripted, and frequently
@@ -338,7 +335,7 @@ delta <- round(50.0*abs(al.cam.const[1]-ni.o.cam.const[1])/
     \begin{column}{.23\linewidth}
       %%%%%%%%%%%%%%%%%%%%%%%%% Block One %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       \begin{block}{\textcolor{ekred}
-              {Step 4:} Robust peak detection \& calibration}
+              {Step 4:} Peak detection \& calibration}
               
       The ``Peaks'' package provides a robust peak detection algorithm
       implemented as the \texttt{SpectrumSearch()} function, which is
