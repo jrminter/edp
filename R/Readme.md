@@ -15,7 +15,7 @@ The edp R package
 
 ## Peaks directory
 
-The Peaks packaged pactched to handle the new C calling
+The Peaks packaged patched to handle the new C calling
 convention in R $\ge$ 3.0.0
 
 
